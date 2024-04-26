@@ -1,18 +1,18 @@
-﻿
+
 using System;
 
-abstract class Length
+interface Length
 {
-    public abstract Length Add(Length other);
-    public abstract Length Subtract(Length other);
-    public abstract Length Multiply(int scalar);
-    public abstract Length Divide(int divisor);
-    public abstract bool LessThan(Length other);
-    public abstract bool GreaterThan(Length other);
-    public abstract override string ToString();
+    Length Add(Length other);
+    Length Subtract(Length other);
+    Length Multiply(int scalar);
+    Length Divide(int divisor);
+    bool LessThan(Length other);
+    bool GreaterThan(Length other);
+    string ToString();
 }
 
-class EngMer : Length
+abstract class EngMer : Length
 {
     public int Pounds { get; set; }
     public int Inches { get; set; }
@@ -22,6 +22,19 @@ class EngMer : Length
         Pounds = pounds;
         Inches = inches;
     }
+
+    public abstract Length Add(Length other);
+    public abstract Length Subtract(Length other);
+    public abstract Length Multiply(int scalar);
+    public abstract Length Divide(int divisor);
+    public abstract bool LessThan(Length other);
+    public abstract bool GreaterThan(Length other);
+    public abstract override string ToString();
+}
+
+class ConcreteEngMer : EngMer
+{
+    public ConcreteEngMer(int pounds, int inches) : base(pounds, inches) { }
 
     public override Length Add(Length other)
     {
@@ -33,7 +46,7 @@ class EngMer : Length
             totalPounds++;
             totalInches -= 12;
         }
-        return new EngMer(totalPounds, totalInches);
+        return new ConcreteEngMer(totalPounds, totalInches);
     }
 
     public override Length Subtract(Length other)
@@ -46,7 +59,7 @@ class EngMer : Length
             totalPounds--;
             totalInches += 12;
         }
-        return new EngMer(totalPounds, totalInches);
+        return new ConcreteEngMer(totalPounds, totalInches);
     }
 
     public override Length Multiply(int scalar)
@@ -55,7 +68,7 @@ class EngMer : Length
         int totalInches = Inches * scalar;
         totalPounds += totalInches / 12;
         totalInches %= 12;
-        return new EngMer(totalPounds, totalInches);
+        return new ConcreteEngMer(totalPounds, totalInches);
     }
 
     public override Length Divide(int divisor)
@@ -67,7 +80,7 @@ class EngMer : Length
             totalPounds++;
             totalInches -= 12;
         }
-        return new EngMer(totalPounds, totalInches);
+        return new ConcreteEngMer(totalPounds, totalInches);
     }
 
     public override bool LessThan(Length other)
@@ -88,7 +101,7 @@ class EngMer : Length
 
     public override string ToString()
     {
-        return $"{Pounds} фунтов {Inches} дюймов";
+        return $"{Pounds} футов {Inches} дюймов";
     }
 }
 
@@ -106,8 +119,8 @@ class Program
         int pounds2 = int.Parse(input2[0]);
         int inches2 = int.Parse(input2[1]);
 
-        Length length1 = new EngMer(pounds1, inches1);
-        Length length2 = new EngMer(pounds2, inches2);
+        Length length1 = new ConcreteEngMer(pounds1, inches1);
+        Length length2 = new ConcreteEngMer(pounds2, inches2);
 
         Console.WriteLine("Выберите операцию:");
         Console.WriteLine("1. Сложение");
@@ -121,20 +134,20 @@ class Program
         switch (choice)
         {
             case 1:
-                Console.WriteLine("Результат сложения: " + (length1.Add(length2)));
+                Console.WriteLine("Результат сложения: " + length1.Add(length2));
                 break;
             case 2:
-                Console.WriteLine("Результат вычитания: " + (length1.Subtract(length2)));
+                Console.WriteLine("Результат вычитания: " + length1.Subtract(length2));
                 break;
             case 3:
                 Console.WriteLine("Введите множитель:");
                 int multiplier = int.Parse(Console.ReadLine());
-                Console.WriteLine("Результат умножения: " + (length1.Multiply(multiplier)));
+                Console.WriteLine("Результат умножения: " + length1.Multiply(multiplier));
                 break;
             case 4:
                 Console.WriteLine("Введите делитель:");
                 int divisor = int.Parse(Console.ReadLine());
-                Console.WriteLine("Результат деления: " + (length1.Divide(divisor)));
+                Console.WriteLine("Результат деления: " + length1.Divide(divisor));
                 break;
             case 5:
                 if (length1.LessThan(length2))
